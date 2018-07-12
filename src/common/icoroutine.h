@@ -26,9 +26,15 @@
 
 struct IOC_COROUTINE_MESSAGE
 {
-    void *_arg_1;
-    void *_arg_2;
-    void *_arg_3;
+    uint16_i _evid;
+    void *_evcallback;
+    void *_evarg;
+};
+
+struct IOC_COROUTINE_ROUSEMESSAGE
+{
+    int32_i _coid;
+    void   *_coarg;
 };
 
 enum IOC_COROUTINE_STATE
@@ -41,6 +47,7 @@ enum IOC_COROUTINE_STATE
 
 typedef struct IOCSCHEDULE iocschedule;
 typedef struct IOC_COROUTINE_MESSAGE ioccoroutine_msg;
+typedef struct IOC_COROUTINE_ROUSEMESSAGE ioccoroutine_rousemsg;
 
 typedef void (*icoroutine_func)(iocschedule *, void *ud);
 
@@ -60,6 +67,6 @@ void ioccoroutine_yield(iocschedule *);
 
 void ioccoroutine_gcc(iocschedule *);
 
-ioccoroutine_msg *ioccoroutine_rouse_create(int32_i coid, void *arg);
+ioccoroutine_rousemsg *ioccoroutine_rouse_create(int32_i coid, void *arg);
 
 #endif

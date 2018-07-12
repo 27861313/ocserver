@@ -3,6 +3,7 @@
 #include "iconvert.h"
 #include "ievent.h"
 #include "isyslog.h"
+#include <linux/time.h>
 
 void *mutits_main(void *arg)
 {
@@ -200,9 +201,9 @@ uint32_i dispacth_seqcalc(iocsystem *lsys)
 void multi_codispatch(iocschedule *S, void *arg) //协程，分离器
 {
 	ioccoroutine_msg *lcormsg = (ioccoroutine_msg *)arg;
-	if (lcormsg->_arg_2 != NULL)
+	if (lcormsg->_evcallback != NULL)
 	{
-		(*(ievent_callback)lcormsg->_arg_2)(v_toint32(lcormsg->_arg_1), lcormsg->_arg_3);
+		(*(ievent_callback)lcormsg->_evcallback)(lcormsg->_evid, lcormsg->_evarg);
 	}
 }
 
@@ -225,8 +226,8 @@ void multi_dispatch(iocsystem *lsys, iocmultithread_t *lth)
 		}
 		else if (lmsg->_evt->_evt_tye == OC_EVENT_COROUSE) //唤醒协程
 		{
-			ioccoroutine_msg *cordata = (ioccoroutine_msg *)lmsg->_evt_arg;
-			ioccoroutine_resume(lth->_cos, v_toint32(cordata->_arg_1), cordata->_arg_2);
+			ioccoroutine_rousemsg *cordata = (ioccoroutine_rousemsg *)lmsg->_evt_arg;
+			ioccoroutine_resume(lth->_cos, cordata->_coid, cordata->_coarg);
 			free(cordata);
 			lmsg->_evt_arg = NULL;
 		}
@@ -238,9 +239,9 @@ void multi_dispatch(iocsystem *lsys, iocmultithread_t *lth)
 			ioccoroutine_msg *lcormsg = malloc(sizeof(ioccoroutine_msg));
 			if (lcormsg != NULL)
 			{
-				lcormsg->_arg_1 = (void *)(int64_i)lmsg->_evt->_evt_tye;
-				lcormsg->_arg_2 = lmsg->_evt->_evt_call;
-				lcormsg->_arg_3 = lmsg->_evt_arg;
+				lcormsg->_evid  = lmsg->_evt->_evt_tye;
+				lcormsg->_evcallback = lmsg->_evt->_evt_call;
+				lcormsg->_evarg = lmsg->_evt_arg;
 
 				int32_i coid = ioccoroutine_new(lth->_cos, multi_codispatch, lcormsg);
 				if (coid != -1)

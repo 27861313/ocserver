@@ -56,11 +56,11 @@ Boolean iocevlistener_register(iocevlisten *listener, void *owner, uint16_i even
 	lnew->_evt->_evt_call = event_call;
 	lnew->_evt->_evt_rf = 1;
 	lnew->_evt_next = NULL;
-#ifdef OC_MULTITHREADING
+
 	if (listener->_evt_issync)
 		iwlock_k(&listener->_evt_lk);
-#endif
 	iocevent *ln = listener->_evt_head;
+	
 	for (;;)
 	{
 		if (ln == NULL)
@@ -88,20 +88,16 @@ Boolean iocevlistener_register(iocevlisten *listener, void *owner, uint16_i even
 		ln = ln->_evt_next;
 	}
 _EVENT_REIGSTER_END:
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		iwrlock_uk(&listener->_evt_lk);
-#endif
 	return isInsert;
 }
 
 Boolean iocevlistener_unregister(iocevlisten *listener, uint16_i event_type)
 {
 	Boolean bresult = FALSE;
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		iwlock_k(&listener->_evt_lk);
-#endif
 	iocevent *ln = listener->_evt_head;
 	for (;;)
 	{
@@ -118,13 +114,8 @@ Boolean iocevlistener_unregister(iocevlisten *listener, uint16_i event_type)
 			lfrhandle->_evt_status = OC_EV_CANCEL;
 			lfr->_evt = NULL;
 			free(lfr);
-#ifdef OC_MULTITHREADING
 			if (AtomicSubFetch(&lfrhandle->_evt_rf, 1) == 0)
 			{
-#else
-			if ((lfrhandle->_evt_rf -= 1) == 0)
-			{
-#endif
 				free(lfrhandle);
 			}
 			bresult = TRUE;
@@ -135,19 +126,15 @@ Boolean iocevlistener_unregister(iocevlisten *listener, uint16_i event_type)
 	}
 
 _EVENT_UNREIGSTER_END:
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		iwrlock_uk(&listener->_evt_lk);
-#endif
 	return bresult;
 }
 iocevhandle *iocevlistener_gethandle(iocevlisten *listener, uint16_i event_type)
 {
 	iocevhandle *lhresult = NULL;
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		irlock_k(&listener->_evt_lk);
-#endif
 	iocevent *ln = listener->_evt_head;
 
 	for (;;)
@@ -163,11 +150,7 @@ iocevhandle *iocevlistener_gethandle(iocevlisten *listener, uint16_i event_type)
 		{
 			if (ln->_evt->_evt_status == OC_EV_CANCEL)
 				break;
-#ifdef OC_MULTITHREADING
 			AtomicAdd(&ln->_evt->_evt_rf, 1);
-#else
-			ln->_evt->_evt_rf += 1;
-#endif
 			lhresult = ln->_evt;
 			break;
 		}
@@ -175,19 +158,15 @@ iocevhandle *iocevlistener_gethandle(iocevlisten *listener, uint16_i event_type)
 		ln = ln->_evt_next;
 	}
 
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		iwrlock_uk(&listener->_evt_lk);
-#endif
 	return lhresult;
 }
 
 void iocevlistener_release(iocsystem *lsys, iocevlisten *listener)
 {
-#ifdef OC_MULTITHREADING
 	if (listener->_evt_issync)
 		iwlock_k(&listener->_evt_lk);
-#endif
 	iocevent *ln = listener->_evt_head;
 	for (;;)
 	{
@@ -201,14 +180,8 @@ void iocevlistener_release(iocsystem *lsys, iocevlisten *listener)
 		lfrhandle->_evt_status = OC_EV_CANCEL;
 		lfr->_evt = NULL;
 		free(lfr);
-#ifdef OC_MULTITHREADING
 		if (AtomicSubFetch(&lfrhandle->_evt_rf, 1) == 0)
 		{
-  
-#else
-		if ((lfrhandle->_evt_rf -= 1) == 0) 
-		{
-#endif
 			free(lfrhandle);
 		}
 	}
@@ -222,13 +195,12 @@ void iocevlistener_release(iocsystem *lsys, iocevlisten *listener)
 		iocsystem_unbindth(lsys, listener->_evt_thidx);
 		listener->_evt_thidx = -1;
 	}
-#ifdef OC_MULTITHREADING
+
 	if (listener->_evt_issync)
 	{
 		iwrlock_uk(&listener->_evt_lk);
 		iwrlock_destory(&listener->_evt_lk);
 	}
-#endif
 }
 
 //---------------------------------------------------------------
