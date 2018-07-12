@@ -70,7 +70,7 @@ Boolean iocevlistener_register(iocevlisten *listener, void *owner, uint16_i even
 		}
 		else if (ln != listener->_evt_head)
 		{
-			if (ln->_evt_next->_evt->_evt_tye == event_type)
+			if (ln->_evt->_evt_tye == event_type)
 			{
 				IEVENT_RELEASE_EVENT(lnew);
 				goto _EVENT_REIGSTER_END;
@@ -80,7 +80,7 @@ Boolean iocevlistener_register(iocevlisten *listener, void *owner, uint16_i even
 		if (ln->_evt_next == listener->_evt_tail)
 		{
 			ln->_evt_next = lnew;
-			lnew->_evt_next = listener->_evt_head;
+			lnew->_evt_next = listener->_evt_tail;
 
 			goto _EVENT_REIGSTER_END;
 		}
@@ -120,10 +120,13 @@ Boolean iocevlistener_unregister(iocevlisten *listener, uint16_i event_type)
 			free(lfr);
 #ifdef OC_MULTITHREADING
 			if (AtomicSubFetch(&lfrhandle->_evt_rf, 1) == 0)
+			{
 #else
 			if ((lfrhandle->_evt_rf -= 1) == 0)
+			{
 #endif
 				free(lfrhandle);
+			}
 			bresult = TRUE;
 			goto _EVENT_UNREIGSTER_END;
 		}
@@ -200,10 +203,14 @@ void iocevlistener_release(iocsystem *lsys, iocevlisten *listener)
 		free(lfr);
 #ifdef OC_MULTITHREADING
 		if (AtomicSubFetch(&lfrhandle->_evt_rf, 1) == 0)
+		{
+  
 #else
-		if ((lfrhandle->_evt_rf -= 1) == 0)
+		if ((lfrhandle->_evt_rf -= 1) == 0) 
+		{
 #endif
 			free(lfrhandle);
+		}
 	}
 
 	memset(listener->_evt_head, 0, sizeof(iocevhandle));

@@ -219,7 +219,7 @@ void *iochashmap_get(iochashmap *lmap, void *key)
 	} while (!CAS(&(ltb->_mark), curr, curr + 1));
 
 	void *val = iocfind_val(key, ltb->_tree, lmap->equals);
-	if (lmap->addref != NULL) // 添加引用计数
+	if (lmap->addref != NULL && val != NULL) // 添加引用计数
 	{
 		lmap->addref(val);
 	}

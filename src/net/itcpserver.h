@@ -46,13 +46,12 @@ extern "C"
 {
 #endif
 
-	typedef struct itcpserver_CALLBACK itcpserver_callback;
-	typedef struct itcpserver itcpserver;
-	typedef struct IOCSEND_BUF iocsendbuf;
+	typedef struct IOCTCP_CALLBACK itcpserver_callback;
+	typedef struct IOCTCP_SERVER itcpserver;
 	typedef struct IOCTCP_CONNECTION ioctcpconnection;
 	typedef struct IOCTCP_SYSTEMSENDMSG ioctcpsystemsendmsg;
 
-	struct IOCTCP_SYSTEMSENDMSG // system回调参数
+	struct IOCTCP_SYSTEMSENDMSG
 	{
 		itcpserver* _tcpser;
 		uint32_i _connfd;
@@ -60,37 +59,35 @@ extern "C"
 
 	struct IOCTCP_CONNECTION
 	{
-		uint8_i _status;		  // 套接字状态
-		uint32_i _netid;		  // connfd
-		uint32_i _ref;			  // 应用计数
+		uint8_i _status;		// 套接字状态
+		uint32_i _netid;		// connfd
+		uint32_i _ref;			// 应用计数
 		uint32_i _outtimes;		// 超时次数
 		uint64_i _lastrecv;		// 上次通信时间
-		//iendpoint _addr;		  // 连接信息
 		iocringbuffer *_rdb;	// 读环形缓冲区
 		iocringbuffer *_sdb;	// 发缓冲区
-		iocqueue *_sque;		  // 发送数据队列
-		//itcpserver *_parent;	// 管理类
+		iocqueue *_sque;		// 发送数据队列
 	};
 
-	struct itcpserver_CALLBACK
+	struct IOCTCP_CALLBACK
 	{
-		resolve_proc _split; // 解包回调
-		tcpapt_proc _accept; // 连接请求回调
-		read_proc _read;	   // 读数据回调
-		close_proc _close;   // 关闭回调
+		resolve_proc _split;    // 解包回调
+		tcpapt_proc _accept;    // 连接请求回调
+		read_proc _read;	    // 读数据回调
+		close_proc _close;      // 关闭回调
 	};
 
-	struct itcpserver
+	struct IOCTCP_SERVER
 	{
-		uint8_i _shutdown;			    // server stop 0.runing 1.stop
-		uint32_i _linkmax;			    // 最大连接
-		uint32_i _tcpfd;			      // tcp listen fd
-		iocepoll *_tcpep;			      // epoll
-		iendpoint _tcpendpoint;		  // port ip
-		iochashmap *_netconhashmap; // 存放tcpconn的hashmap
-		iocsystem *_system;         // 系统线程
+		uint8_i _shutdown;			   // server stop 0.runing 1.stop
+		uint32_i _linkmax;			   // 最大连接
+		uint32_i _tcpfd;			   // tcp listen fd
+		iocepoll *_tcpep;			   // epoll
+		iendpoint _tcpendpoint;		   // port ip
+		iochashmap *_netconhashmap;    // 存放tcpconn的hashmap
+		iocsystem *_system;            // 系统线程
 		itcpserver_callback _callback; // 回调函数群
-		iocevlisten _evtlisten;     // event listen handle of object
+		iocevlisten _evtlisten;        // event listen handle of object
 	};
 
 	//////////////////////////////////////////////////////////////////////
@@ -186,7 +183,7 @@ extern "C"
 	// @function tcp accept
 	// @param    itcpserver*  - server object
 	// @return   void -
-	int32_i itcpserver_accept(itcpserver *tcpser);
+	int32_i itcpserver_accept(itcpserver *tcpser, iendpoint* addr/*传出参数*/);
 
 	// @function ioctcpreaddata
 	// @param    itcpserver*  - server object

@@ -114,7 +114,7 @@ void *test_system_exec_1(void *arg)
 			}
 			else
 			{
-				//AtomicAdd(&thsend, 1);
+				AtomicAdd(&thsend, 1);
 			}
 		}
 		else
@@ -127,7 +127,7 @@ void *test_system_exec_1(void *arg)
 				if (testReady == 0)
 				{
 					printfworker_vol(lsys);
-					//AtomicRelease(&testsqd);
+					AtomicRelease(&testsqd);
 				}
 				++testReady;
 				if (testReady >= 2)
@@ -161,7 +161,7 @@ void *system_worker_run(void *arg1, void *arg2)
 	{
 		ISLEEP(1);
 	}*/
-	//printf("worker\n");
+	printf("worker\n");
 	//int32_i iret = waitwork(lsys, t);
 
 	return 0;
@@ -172,7 +172,7 @@ void *test_event_fun(uint16_i evtid, void *arg)
 	int32_i ival = v_toint32(arg);
 	//AtomicAdd(&testempcount, 1);
 
-	/*if (AtomicAdd(&testsqd, 1) >= (TESTCOUNT_MAX * 2) && !istestend)
+	if (AtomicAdd(&testsqd, 1) >= (TESTCOUNT_MAX * 2) && !istestend)
 	{
 		testend = getdida_msec();
 		int32_i tmcnt = testsqd;
@@ -180,13 +180,13 @@ void *test_event_fun(uint16_i evtid, void *arg)
 		teststart = getdida_msec();
 		printf("time consuming  %llu msec count:%d\n", curtime, tmcnt);
 		istestend = TRUE;
-	}*/
+	}
 	return NULL;
 }
 
 void test_system_run()
 {
-	/*ilock_init(&testlk);
+	ilock_init(&testlk);
 	int32_i threadnum = 2;
 	iocsystem cmsys;
 	//initsys(&cmsys, "cm-run", 1024, threadnum, system_worker_run, NULL, NULL, update_run);
@@ -210,7 +210,7 @@ void test_system_run()
 	while (1)
 	{
 		ISLEEP(100);
-	}*/
+	}
 	/*while (1)
 	{
 		if (testsendct <= TESTCOUNT_MAX)

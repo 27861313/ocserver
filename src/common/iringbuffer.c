@@ -195,7 +195,6 @@ int32_i iocringbuffer_write(iocringbuffer *buffer, char *data, int32_i length, B
 void iocringbuffer_writebyted(iocringbuffer *buffer, uint32_i size)
 {
 #ifdef OC_MULTITHREADING
-	printf("size : %d\n", size);
 		buffer->_posv._pos._end += size;
 #else
 		buffer->_end += size;

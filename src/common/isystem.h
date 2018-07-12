@@ -114,14 +114,9 @@ extern "C"
 		/*系统循环update回调函数*/
 		iocsystem_callback _update;
 		/*单线程与多线程*/
-#ifndef OC_MULTITHREADING
-		iocqueue *_e;
-		ithread _main_t;
-#else
-	iocthread *_main_t;
-	uint32_i _dispatchseq;
-	iocmultithread *_pool_t;
-#endif
+		iocthread *_main_t;
+		uint32_i _dispatchseq;
+		iocmultithread *_pool_t;
 	};
 
 	typedef struct IOCSYSTEM iocsystem;
@@ -129,18 +124,6 @@ extern "C"
 
 	iocsystem *sys_global;
 
-#ifndef OC_MULTITHREADING
-
-	// @function 初始化系统
-	// @param    iocsystem*    - 系统对象
-	// @param    name         -  系统名字
-	// @param    initfun      -  初始化回调函数
-	// @param    releasefun -  资源释放回调函数
-	// @param    updatefun  - update回调函数
-	// @return   Boolean - 初始化是否成功
-	//Boolean initsys(iocsystem *lsys, const char *name, const int32_i evtsize, iocsystem_callback initfun, iocsystem_callback releasefun, iocsystem_callback updatefun);
-	Boolean iocsystem_init(iocsystem *lsys, const char *name, int32_i evtsize, const iocsystem_param *satt);
-#else
 
 // @function 初始化系统
 // @param    iocsystem    - 系统对象
@@ -153,7 +136,6 @@ extern "C"
 //Boolean initsys(iocsystem *lsys, const char *name, const int32_i evtsize, const int32_i tnum, multhread_fun worker_callback, iocsystem_callback initfun, iocsystem_callback releasefun, iocsystem_callback updatefun);
 Boolean iocsystem_init(iocsystem *lsys, const char *name, iocmultithread_param *multitatt, iocsystem_param *satt);
 
-#endif
 
 	// @function 释放系统资源
 	// @param    iocsystem    - 系统对象
@@ -184,9 +166,6 @@ Boolean iocsystem_init(iocsystem *lsys, const char *name, iocmultithread_param *
 	// @return  Boolean         - TRUE 发送成功
 	Boolean sendmessage_extern(iocsystem *lsys, uint16_i event_type, ievent_callback event_call, void *arg, int32_i ithid);
 
-#ifndef OC_MULTITHREADING
-	void single_dispatch(iocsystem *lsys, int32_i timeout);
-#else
 // @function 工作线程挂起
 // @param    iocsystem×         - 系统对象
 // @param    iocmultithread_t	- 线程对象
@@ -228,4 +207,3 @@ void printfworker_vol(iocsystem *lsys);
 }
 #endif
 
-#endif

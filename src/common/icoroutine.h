@@ -24,17 +24,11 @@
 
 #include "iinc.h"
 
-struct IOC_COROUTINE_ROUSE_MESSAGE
-{
-    int32_i _coid;
-    void *_coarg;
-};
-
 struct IOC_COROUTINE_MESSAGE
 {
-    uint16_i _evtid;
-    void *_evtcallback;
-    void *_evtarg;
+    void *_arg_1;
+    void *_arg_2;
+    void *_arg_3;
 };
 
 enum IOC_COROUTINE_STATE
@@ -47,7 +41,6 @@ enum IOC_COROUTINE_STATE
 
 typedef struct IOCSCHEDULE iocschedule;
 typedef struct IOC_COROUTINE_MESSAGE ioccoroutine_msg;
-typedef struct IOC_COROUTINE_ROUSE_MESSAGE ioccoroutine_rousemsg;
 
 typedef void (*icoroutine_func)(iocschedule *, void *ud);
 
@@ -67,6 +60,6 @@ void ioccoroutine_yield(iocschedule *);
 
 void ioccoroutine_gcc(iocschedule *);
 
-ioccoroutine_rousemsg *ioccoroutine_rouse_create(int32_i coid, void *arg);
+ioccoroutine_msg *ioccoroutine_rouse_create(int32_i coid, void *arg);
 
 #endif

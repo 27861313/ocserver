@@ -53,13 +53,13 @@ struct IOCCOROUTINE
     char *_stack;
 };
 
-ioccoroutine_rousemsg *ioccoroutine_rouse_create(int32_i coid, void *arg)
+ioccoroutine_msg *ioccoroutine_rouse_create(int32_i coid, void *arg)
 {
-    ioccoroutine_rousemsg *lmsg = malloc(sizeof(ioccoroutine_rousemsg));
+    ioccoroutine_msg *lmsg = malloc(sizeof(ioccoroutine_msg));
     if (lmsg == NULL)
         return NULL;
-    lmsg->_coid = coid;
-    lmsg->_coarg = arg;
+    lmsg->_arg_1 = (void *)(int64_i)coid;
+    lmsg->_arg_2 = arg;
     return lmsg;
 }
 

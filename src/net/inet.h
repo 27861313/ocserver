@@ -68,7 +68,7 @@ extern "C"
 	//地址信息数据结构
 	typedef struct IOCENDPOINT iendpoint;
 	//
-	typedef struct itcpserver itcpserver;
+	typedef struct IOCTCP_SERVER itcpserver;
 	//回调函数定义
 	typedef struct IOCACCEPT_KCPMSG ikcpaptmsg;
 	typedef struct IOCACCEPT_TCPMSG itcpaptmsg;

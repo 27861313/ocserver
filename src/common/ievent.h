@@ -116,7 +116,7 @@ extern "C"
 			iocevhandle *hfree = handle;                   \
 			handle = NULL;                                 \
 			memset((char *)hfree, 0, sizeof(iocevhandle)); \
-			free(hfree);                                   \
+			/*free(hfree);*/                                   \
 		}                                                  \
 	}
 #else
